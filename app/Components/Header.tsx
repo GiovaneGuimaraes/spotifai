@@ -8,10 +8,13 @@ import { twMerge } from "tailwind-merge";
 import { useSupabaseClient } from "@supabase/auth-helpers-react";
 import { FaUserAlt } from "react-icons/fa";
 import toast from "react-hot-toast";
-
+import Image from "next/image";
 import Button from "./Button";
 import useAuthModal from "@/hooks/useAuthModal";
 import { useUser } from "@/hooks/useUser";
+import useGetUserById from "@/hooks/useGetUserById";
+import useLoadAvatar from "@/hooks/useLoadAvatar";
+import { UserDetails } from "@/types";
 
 interface HeaderProps {
   children: React.ReactNode;
@@ -24,6 +27,9 @@ const Header: React.FC<HeaderProps> = ({ children, className }) => {
 
   const supabaseClient = useSupabaseClient();
   const { user } = useUser();
+
+  const { userDetails } = useGetUserById(user?.id);
+  const avatarHeader = useLoadAvatar(userDetails as UserDetails);
 
   const handleLogout = async () => {
     const { error } = await supabaseClient.auth.signOut();
@@ -143,12 +149,28 @@ const Header: React.FC<HeaderProps> = ({ children, className }) => {
               <Button onClick={handleLogout} className="bg-white px-6 py-2">
                 Logout
               </Button>
-              <Button
-                onClick={() => router.push("/account")}
-                className="bg-white"
-              >
-                <FaUserAlt />
-              </Button>
+
+              {avatarHeader ? (
+                <div className="h-full w-full">
+                  <Image
+                    onClick={() => {
+                      router.push("/account");
+                    }}
+                    width={50}
+                    height={50}
+                    src={avatarHeader || ""}
+                    alt="AvatarHeader"
+                    className="rounded-full h-full w-full object-cover cursor-pointer"
+                  />
+                </div>
+              ) : (
+                <Button
+                  onClick={() => router.push("/account")}
+                  className="bg-white"
+                >
+                  <FaUserAlt />
+                </Button>
+              )}
             </div>
           ) : (
             <>
