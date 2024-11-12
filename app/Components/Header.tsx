@@ -151,7 +151,7 @@ const Header: React.FC<HeaderProps> = ({ children, className }) => {
               </Button>
 
               {avatarHeader ? (
-                <div className="h-full w-full">
+                <div className="h-12 w-full">
                   <Image
                     onClick={() => {
                       router.push("/account");
